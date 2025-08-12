@@ -1,62 +1,48 @@
 <!doctype html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Fuel Tracker · Pro</title>
-  <meta name="description" content="Registro de combustible profesional: guarda en Google Sheets, funciona offline, exporta/importa CSV, métricas y gráficos." />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Fuel Tracker</title>
+  <meta name="theme-color" content="#0d111a">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0d111a">
   <style>
-    :root{--bg:#0c1117;--card:#0f1623;--muted:#8aa0b7;--text:#e6edf3;--accent:#7c9fff;--ok:#2ecc71;--warn:#f1c40f;--err:#ff5d5d;--line:#1d2838}
-    *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,#0b0f15,#0f1623 40%,#0b0f15);color:var(--text)}
-    header{position:sticky;top:0;backdrop-filter:blur(10px);background:rgba(12,17,23,.65);border-bottom:1px solid var(--line);z-index:10}
-    .wrap{max-width:1080px;margin:0 auto;padding:14px 16px}
-    h1{font-size:1.1rem;margin:0;display:flex;gap:10px;align-items:center;letter-spacing:.2px}
-    main{padding:18px 16px}
-    .grid{display:grid;gap:16px}
-    @media(min-width:980px){.grid{grid-template-columns:1.05fr .95fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.25)}
-    .card h2{font-size:1rem;margin:0 0 10px;color:#cdd7f1}
-    .card .content{padding:16px}
-    label{font-size:.82rem;color:var(--muted)} input,select,textarea{width:100%;padding:12px;background:#0b1320;border:1px solid #172338;color:var(--text);border-radius:12px}
-    textarea{min-height:72px;resize:vertical}
+    :root{--bg:#0c1117;--card:#0f1623;--line:#1d2838;--text:#e6edf3;--muted:#8aa0b7;--accent:#7c9fff;--ok:#2ecc71;--warn:#f1c40f;--err:#ff5d5d}
+    *{box-sizing:border-box} html,body{height:100%} body{margin:0;background:linear-gradient(180deg,#0b0f15,#0f1623 40%,#0b0f15);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto}
+    header{position:sticky;top:0;backdrop-filter:blur(8px);background:rgba(12,17,23,.65);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+    .wrap{max-width:980px;margin:0 auto;padding:12px 14px}
+    h1{font-size:1.1rem;margin:0;letter-spacing:.2px}
+    main{padding:16px 14px}
+    .grid{display:grid;gap:14px}
+    @media(min-width:900px){.grid{grid-template-columns:1.1fr .9fr}}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
+    .card .content{padding:14px}
+    label{font-size:.85rem;color:var(--muted)}
+    input,select,textarea{width:100%;padding:14px;border-radius:14px;background:#0b1320;border:1px solid #172338;color:var(--text);font-size:16px}
+    textarea{min-height:76px;resize:vertical}
     .row{display:grid;gap:10px;margin-bottom:12px}
-    @media(min-width:620px){.row{grid-template-columns:repeat(2,1fr)}}
-    @media(min-width:980px){.row-3{grid-template-columns:repeat(3,1fr)}}
-    button{appearance:none;border:1px solid #2a3650;background:#1a2340;color:#dbe6ff;padding:12px 14px;border-radius:12px;cursor:pointer}
+    @media(min-width:640px){.row-2{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:900px){.row-3{grid-template-columns:repeat(3,1fr)}}
+    button{appearance:none;border:1px solid #2a3650;background:#1a2340;color:#dbe6ff;padding:14px;border-radius:14px;cursor:pointer}
     .primary{background:linear-gradient(135deg,#3957ff,#6aa0ff);border-color:transparent;color:#fff}
-    .ghost{background:transparent}
-    .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    table{width:100%;border-collapse:collapse} th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:.92rem;vertical-align:top}
-    th{color:#9fb0d1;font-weight:600}
-    .muted{color:var(--muted)} .stat{display:flex;gap:8px;align-items:baseline} .stat b{font-size:1.25rem}
-    .pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #2a3650;background:#0b0f1a;border-radius:999px;padding:6px 10px;color:#cfd9ff;font-size:.8rem}
-    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)} .danger{background:#2a0a0a}
-    footer{padding:28px;color:var(--muted);text-align:center}
-    canvas{width:100%;height:240px}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #2a3650;background:#0b0f1a;border-radius:999px;padding:8px 12px;color:#cfd9ff;font-size:.85rem}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px;border-bottom:1px solid var(--line);text-align:left;font-size:.92rem}
+    th{color:#9fb0d1}
+    footer{padding:24px 14px;color:var(--muted);text-align:center;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
   </style>
 </head>
 <body>
-  <header>
-    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-      <h1>⛽ Fuel Tracker <span class="muted" style="font-weight:400">Pro (Google Sheets + Offline)</span></h1>
-      <div class="toolbar">
-        <button class="ghost" id="btn-export">Exportar CSV</button>
-        <label class="pill" for="file-import">Importar CSV<input id="file-import" type="file" accept=".csv" style="display:none"></label>
-        <button class="ghost" id="btn-sync">Forzar sincronización</button>
-        <button class="ghost" id="btn-reset">Borrar local</button>
-      </div>
-    </div>
-  </header>
+  <header><div class="wrap"><h1>⛽ Fuel Tracker</h1></div></header>
 
   <main class="wrap grid">
     <section class="card">
       <div class="content">
-        <h2>Nuevo registro</h2>
+        <h2 style="margin:0 0 8px">Nuevo registro</h2>
         <form id="form">
           <div class="row row-3">
             <div>
@@ -66,21 +52,19 @@
             <div>
               <label for="vehiculo">Vehículo</label>
               <select id="vehiculo" name="vehiculo">
-                <option>Mi coche</option>
+                <option>Peugeot 206</option>
               </select>
             </div>
             <div>
               <label for="fuel">Combustible</label>
               <select id="fuel" name="fuel">
-                <option>Gasolina 95</option>
-                <option>Gasolina 98</option>
-                <option>Diésel A</option>
-                <option>GLP</option>
-                <option>Otro</option>
+                <option>Diésel</option>
+                <option>Gasolina</option>
               </select>
             </div>
           </div>
-          <div class="row">
+
+          <div class="row row-3">
             <div>
               <label for="euros">Euros (€)</label>
               <input id="euros" name="euros" type="number" inputmode="decimal" step="0.01" min="0" required>
@@ -89,21 +73,13 @@
               <label for="precio_litro">Precio/L (€/L)</label>
               <input id="precio_litro" name="precio_litro" type="number" inputmode="decimal" step="0.001" min="0" required>
             </div>
-          </div>
-          <div class="row">
             <div>
               <label for="km">Odómetro (km)</label>
               <input id="km" name="km" type="number" inputmode="numeric" step="1" min="0" required>
             </div>
-            <div>
-              <label for="lleno">Depósito lleno</label>
-              <select id="lleno" name="lleno">
-                <option value="sí">Sí</option>
-                <option value="no">No</option>
-              </select>
-            </div>
           </div>
-          <div class="row">
+
+          <div class="row row-2">
             <div>
               <label for="estacion">Estación</label>
               <input id="estacion" name="estacion" placeholder="Nombre o cadena" />
@@ -117,288 +93,181 @@
               </select>
             </div>
           </div>
+
           <div class="row">
             <div>
               <label for="notas">Notas</label>
               <textarea id="notas" name="notas" placeholder="Ticket, autopista, ciudad, etc."></textarea>
             </div>
           </div>
-          <div class="toolbar">
+
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
             <button type="submit" class="primary">Guardar</button>
-            <button type="button" id="btn-clear" class="ghost">Limpiar</button>
+            <button type="button" id="btn-clear">Limpiar</button>
             <span class="pill" id="status-pill">Sincronizado</span>
           </div>
         </form>
-        <p class="muted" style="margin-top:8px">Consejo: registra con <b>depósitos llenos</b> para consumos más precisos. Activa la ubicación si quieres guardar lat/lon (opcional).</p>
+        <p class="muted" style="color:#8aa0b7;margin:.6rem 0 0">Consejo: registra siempre con el km del odómetro.</p>
       </div>
     </section>
 
     <section class="card">
       <div class="content">
-        <h2>Resumen</h2>
-        <div class="row" style="grid-template-columns:repeat(3,1fr)">
-          <div class="stat"><span class="muted">Consumo medio</span><b id="s-consumo">–</b><span class="muted">L/100km</span></div>
-          <div class="stat"><span class="muted">Coste medio</span><b id="s-coste">–</b><span class="muted">€/km</span></div>
-          <div class="stat"><span class="muted">CO₂ total</span><b id="s-co2">–</b><span class="muted">kg</span></div>
+        <h2 style="margin:0 0 8px">Resumen</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:8px">
+          <div class="pill">Consumo medio <b id="s-consumo">–</b> L/100km</div>
+          <div class="pill">Coste medio <b id="s-coste">–</b> €/km</div>
+          <div class="pill">CO₂ total <b id="s-co2">–</b> kg</div>
         </div>
-        <div class="row" style="grid-template-columns:1fr">
-          <div class="pill">Mejor registro: <span id="s-min">–</span></div>
-          <div class="pill">Peor registro: <span id="s-max">–</span></div>
-        </div>
-        <div style="margin-top:8px">
-          <canvas id="chart"></canvas>
-        </div>
-      </div>
-    </section>
-
-    <section class="card" style="grid-column:1/-1">
-      <div class="content">
-        <h2>Histórico (local)</h2>
+        <h3 style="margin:.6rem 0;color:#cdd7f1;font-size:1rem">Últimos repostajes</h3>
         <table id="tabla">
-          <thead>
-            <tr>
-              <th>Fecha</th><th>Vehículo</th><th>Comb.</th><th>€</th><th>€/L</th><th>Odóm.</th><th>Km</th><th>Litros</th><th>L/100km</th><th>€/km</th><th>CO₂ (kg)</th><th>Estado</th>
-            </tr>
-          </thead>
+          <thead><tr><th>Fecha</th><th>€</th><th>€/L</th><th>Km</th><th>Litros</th><th>L/100km</th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
     </section>
   </main>
 
-  <footer>
-    Guarda todo en tu dispositivo y sincroniza con <b>Google Sheets</b>. Funciona offline con cola de envíos.
-  </footer>
+  <footer>iPhone listo: añade a pantalla de inicio desde Safari. Funciona offline y sincroniza con Google Sheets.</footer>
 
 <script>
-// ===================== CONFIGURACIÓN =====================
-const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwnRGDahVQ_APm2qstM5-L4WXmJXnYQVPmSsjQAnjXuTmWZkEdhoGGpWcEjqCYix8mZFg/exec";
-const GAS_API_KEY = ""; // pon aquí tu clave si activaste API_KEY en Code.gs
-// ===================== FIN CONFIG ========================
+// ======= CONFIG =======
+const GAS_ENDPOINT = "PON_AQUI_TU_URL_/exec"; // actualiza con tu /exec
+const GAS_API_KEY  = ""; // si pusiste API_KEY en Code.gs, pon la misma aquí
+// ======= FIN CONFIG ===
 
-const LS_ENTRIES = 'fuelEntries_v2';
-const LS_QUEUE   = 'fuelQueue_v2';
-const CO2_PER_L = 2.68;
-let chart;
+const LS_ENTRIES='fuelEntries_v2', LS_QUEUE='fuelQueue_v2', CO2_PER_L=2.68;
 
-function readLS(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback)) }catch{ return fallback } }
-function writeLS(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-
-function fmt(n, d=2){ return (n==null||!isFinite(n))? '–' : Number(n).toFixed(d) }
-function toDateStr(d){ return new Date(d).toISOString().slice(0,10) }
+function readLS(k,f){ try{ return JSON.parse(localStorage.getItem(k)||JSON.stringify(f)) }catch{ return f } }
+function writeLS(k,v){ localStorage.setItem(k, JSON.stringify(v)); }
+function fmt(n,d=2){ return (n==null||!isFinite(n))?'–': Number(n).toFixed(d) }
+function uuid(){ return Math.random().toString(36).slice(2)+Date.now().toString(36) }
+function setStatus(t,k){ const el=document.getElementById('status-pill'); el.textContent=t; el.className='pill '+(k||''); }
 
 function litersFrom(euros, price){ return price>0? euros/price : null }
 
 function enrichRows(entries){
+  // Ordenar por km y fecha para calcular consumos
+  entries = [...entries].sort((a,b)=>(a.km-b.km)||String(a.fecha).localeCompare(String(b.fecha)));
   let rows=[];
   for(let i=0;i<entries.length;i++){
-    const cur = entries[i];
-    const prev = entries[i-1];
+    const cur=entries[i], prev=entries[i-1];
     const litros = litersFrom(cur.euros, cur.precio_litro);
-    let km_rec = prev ? (cur.km - prev.km) : 0;
-    if(km_rec <= 0){ rows.push({...cur, litros, km_rec:0, l100:null, eur_km:null, co2: litros? litros*CO2_PER_L:0}); continue; }
-    const l100 = litros ? (litros / km_rec) * 100 : null;
-    const eur_km = cur.euros / km_rec;
-    const co2 = litros ? litros * CO2_PER_L : 0;
+    const km_rec = prev ? (cur.km - prev.km) : 0;
+    const l100 = (km_rec>0 && litros!=null) ? (litros/km_rec)*100 : null;
+    const eur_km = km_rec>0 ? (cur.euros/km_rec) : null;
+    const co2 = litros? litros*CO2_PER_L : 0;
     rows.push({...cur, litros, km_rec, l100, eur_km, co2});
   }
   const valid = rows.filter(r=> r.l100!=null && isFinite(r.l100));
   const avg_l100 = valid.length? valid.reduce((a,r)=>a+r.l100,0)/valid.length : null;
   const avg_eurkm = valid.length? valid.reduce((a,r)=>a+r.eur_km,0)/valid.length : null;
   const total_co2 = rows.reduce((a,r)=>a+(r.co2||0),0);
-  let min=null, max=null; for(const r of valid){ if(!min||r.l100<min.l100) min=r; if(!max || r.l100>max.l100) max=r; }
-  return {rows, avg_l100, avg_eurkm, total_co2, min, max};
+  return {rows, avg_l100, avg_eurkm, total_co2};
 }
 
-function render(){
-  const entries = readLS(LS_ENTRIES, []);
-  entries.sort((a,b)=> (a.km-b.km) || (a.fecha.localeCompare(b.fecha)) );
-  const {rows, avg_l100, avg_eurkm, total_co2, min, max} = enrichRows(entries);
-  document.getElementById('s-consumo').textContent = avg_l100? fmt(avg_l100): '–';
-  document.getElementById('s-coste').textContent = avg_eurkm? fmt(avg_eurkm,3): '–';
-  document.getElementById('s-co2').textContent = fmt(total_co2);
-  document.getElementById('s-min').textContent = min? `${fmt(min.l100)} L/100km (${min.fecha})`:'–';
-  document.getElementById('s-max').textContent = max? `${fmt(max.l100)} L/100km (${max.fecha})`:'–';
-  const q = readLS(LS_QUEUE, []);
-  const pending = new Set(q.map(x=>x.id));
-  const tbody = document.querySelector('#tabla tbody');
-  tbody.innerHTML = rows.map(r=>`<tr>
-    <td>${r.fecha}</td>
-    <td>${r.vehiculo||'–'}</td>
-    <td>${r.fuel||'–'}</td>
-    <td>${fmt(r.euros,2)}</td>
-    <td>${fmt(r.precio_litro,3)}</td>
-    <td>${fmt(r.km,0)}</td>
-    <td>${r.km_rec? fmt(r.km_rec,0):'–'}</td>
-    <td>${fmt(r.litros,2)}</td>
-    <td>${r.l100!=null? fmt(r.l100,2):'–'}</td>
-    <td>${r.eur_km!=null? fmt(r.eur_km,3):'–'}</td>
-    <td>${fmt(r.co2,2)}</td>
-    <td>${pending.has(r.id)? '<span class="pill warn">Pendiente</span>' : '<span class="pill ok">Enviado</span>'}</td>
-  </tr>`).join('');
-  drawChart(rows);
-}
-
-function drawChart(rows){
-  const ctx = document.getElementById('chart').getContext('2d');
-  const labels = rows.map(r=> r.fecha);
-  const data = rows.map(r=> r.l100);
-  if(window.Chart){
-    if(chart) chart.destroy();
-    chart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label:'L/100km', data }] }, options: { responsive:true, plugins:{legend:{display:false}}, scales:{y:{beginAtZero:false}} } });
-  }
-}
-
-async function maybeGetLocation(){
-  try{
-    if(!('geolocation' in navigator)) return null;
-    return await new Promise((res)=> navigator.geolocation.getCurrentPosition(p=>res({lat:p.coords.latitude, lon:p.coords.longitude}), _=>res(null), {enableHighAccuracy:false, timeout:2000}) );
-  }catch{return null}
-}
-
-function uuid(){ return Math.random().toString(36).slice(2) + Date.now().toString(36) }
-
-async function addEntry(e){
-  e.preventDefault();
-  const fd = new FormData(document.getElementById('form'));
-  const entry = {
-    id: uuid(),
-    fecha: fd.get('fecha'),
-    vehiculo: fd.get('vehiculo')||'Mi coche',
-    fuel: fd.get('fuel')||'Gasolina 95',
-    euros: parseFloat(fd.get('euros')),
-    precio_litro: parseFloat(fd.get('precio_litro')),
-    km: parseFloat(fd.get('km')),
-    lleno: fd.get('lleno')||'sí',
-    estacion: fd.get('estacion')||'',
-    pago: fd.get('pago')||'Tarjeta',
-    notas: (fd.get('notas')||'').toString().slice(0,500)
-  };
-  if(!entry.fecha || !isFinite(entry.euros) || !isFinite(entry.precio_litro) || !isFinite(entry.km)){
-    alert('Revisa los campos obligatorios.'); return;
-  }
-  entry.loc = await maybeGetLocation();
-  const entries = readLS(LS_ENTRIES, []); entries.push(entry); writeLS(LS_ENTRIES, entries);
-  const queue = readLS(LS_QUEUE, []); queue.push(entry); writeLS(LS_QUEUE, queue);
-  setStatus('Pendiente de envío', 'warn');
-  render();
-  document.getElementById('form').reset();
-  document.getElementById('fecha').value = toDateStr(new Date());
-  syncQueue();
-}
-
-function setStatus(text, kind){
-  const el = document.getElementById('status-pill');
-  el.textContent = text;
-  el.className = 'pill ' + (kind||'');
-}
-
+// ---- Envío a Google ----
 async function sendToGoogle(batch){
-  if(!GAS_ENDPOINT){ throw new Error('Configura GAS_ENDPOINT en el código.'); }
-  const payload = { apiKey: GAS_API_KEY, entries: batch };
+  const payload={apiKey:GAS_API_KEY, entries:batch};
   try{
-    const res = await fetch(GAS_ENDPOINT, {
-      method:'POST',
-      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload),
-      mode: 'cors',
-      cache:'no-cache'
-    });
+    const res=await fetch(GAS_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload),mode:'cors',cache:'no-cache'});
     if(!res.ok) throw new Error('HTTP '+res.status);
-    try{ const j = await res.json(); if(!j.ok) throw new Error(j.error||'unknown'); }catch(_){}
     return true;
-  }catch(err){
-    // Fallback "no-cors" por si el navegador bloquea lectura de respuesta
-    await fetch(GAS_ENDPOINT, { method:'POST', body: JSON.stringify(payload), mode:'no-cors' });
+  }catch{
+    await fetch(GAS_ENDPOINT,{method:'POST',body:JSON.stringify(payload),mode:'no-cors'}); // fallback
     return true;
   }
 }
 
 async function syncQueue(){
-  let queue = readLS(LS_QUEUE, []);
-  if(!queue.length){ setStatus('Sincronizado', 'ok'); return; }
-  setStatus(`Enviando ${queue.length}…`, 'warn');
-  const batch = queue.slice(0, 20);
+  let queue=readLS(LS_QUEUE,[]);
+  if(!queue.length){ setStatus('Sincronizado','ok'); return; }
+  setStatus(`Enviando ${queue.length}…`,'warn');
+  const batch=queue.slice(0,20);
   try{
-    const ok = await sendToGoogle(batch);
+    const ok=await sendToGoogle(batch);
     if(ok){
-      let remaining = readLS(LS_QUEUE, []);
-      const sentIds = new Set(batch.map(x=>x.id));
-      remaining = remaining.filter(x=> !sentIds.has(x.id));
-      writeLS(LS_QUEUE, remaining);
-      setStatus(remaining.length? `Pendientes ${remaining.length}` : 'Sincronizado', remaining.length? 'warn':'ok');
-      render();
-      if(remaining.length) syncQueue();
+      const keep=new Set(batch.map(x=>x.id));
+      queue=readLS(LS_QUEUE,[]).filter(x=>!keep.has(x.id));
+      writeLS(LS_QUEUE,queue);
+      setStatus(queue.length?`Pendientes ${queue.length}`:'Sincronizado',queue.length?'warn':'ok');
+      renderSummary(); if(queue.length) syncQueue();
     }
-  }catch(err){
-    setStatus('Error de envío', 'err');
+  }catch{ setStatus('Error de envío','err'); }
+}
+
+// ---- Lectura del histórico desde Sheets ----
+async function fetchRemote(limit=50){
+  try{
+    // intento por POST (evita CORS raros)
+    const res=await fetch(GAS_ENDPOINT,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({apiKey:GAS_API_KEY,op:'list',limit}),mode:'cors'});
+    const j=await res.json(); if(!j.ok) throw new Error(j.error||'read error'); 
+    return Array.isArray(j.entries)? j.entries : [];
+  }catch{
+    // segundo intento por GET (si tu entorno permite CORS de GAS)
+    try{
+      const url=`${GAS_ENDPOINT}?op=list&limit=${limit}${GAS_API_KEY?`&key=${encodeURIComponent(GAS_API_KEY)}`:''}`;
+      const r=await fetch(url,{mode:'cors'}); const j=await r.json(); return j.entries||[];
+    }catch{ return []; }
   }
 }
 
-function exportCSV(){
-  const entries = readLS(LS_ENTRIES, []);
-  const {rows} = enrichRows(entries);
-  const header = ['id','fecha','vehiculo','fuel','euros','precio_litro','km','lleno','estacion','pago','notas','lat','lon','km_recorridos','litros','consumo_100km','costo_km','co2_kg'];
-  const lines = [header.join(',')].concat(rows.map(r=>[r.id, r.fecha, r.vehiculo||'', r.fuel||'', fmt(r.euros,2), fmt(r.precio_litro,3), fmt(r.km,0), r.lleno||'', r.estacion||'', r.pago||'', (r.notas||'').replace(/,|\n/g,' '), r.loc?.lat||'', r.loc?.lon||'', r.km_rec!=null? fmt(r.km_rec,0):'', r.litros!=null? fmt(r.litros,2):'', r.l100!=null? fmt(r.l100,2):'', r.eur_km!=null? fmt(r.eur_km,3):'', fmt(r.co2,2)].join(',')));
-  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fuel_tracker.csv'; a.click(); URL.revokeObjectURL(a.href);
+async function renderSummary(){
+  // remoto + local pendientes
+  const remote = await fetchRemote(50);
+  const local  = readLS(LS_ENTRIES, []);
+  const all = [...remote, ...local]; // si hay duplicados por id, podríamos deduplicar
+  const {rows, avg_l100, avg_eurkm, total_co2} = enrichRows(all);
+  document.getElementById('s-consumo').textContent = avg_l100? fmt(avg_l100) : '–';
+  document.getElementById('s-coste').textContent   = avg_eurkm? fmt(avg_eurkm,3) : '–';
+  document.getElementById('s-co2').textContent     = fmt(total_co2);
+
+  const tbody=document.querySelector('#tabla tbody');
+  const last=rows.slice(-8); // últimos 8
+  tbody.innerHTML = last.map(r=>`<tr>
+    <td>${r.fecha||''}</td>
+    <td>${fmt(r.euros,2)}</td>
+    <td>${fmt(r.precio_litro,3)}</td>
+    <td>${fmt(r.km,0)}</td>
+    <td>${fmt(r.litros,2)}</td>
+    <td>${r.l100!=null? fmt(r.l100,2):'–'}</td>
+  </tr>`).join('');
 }
 
-async function importCSV(file){
-  const text = await file.text(); 
-  const lines = text.split(/\r?\n/).filter(Boolean);
-  if(!lines.length) return; 
-  const header = lines[0].split(',');
-  const idx = {fecha: header.indexOf('fecha'), euros: header.indexOf('euros'), precio_litro: header.indexOf('precio_litro'), km: header.indexOf('km') };
-  const out=[]; 
-  for(let i=1;i<lines.length;i++){
-    const parts = lines[i].split(',');
-    const fecha = parts[idx.fecha]?.trim();
-    const euros = parseFloat(parts[idx.euros]);
-    const precio_litro = parseFloat(parts[idx.precio_litro]);
-    const km = parseFloat(parts[idx.km]);
-    if(!fecha || !isFinite(euros)||!isFinite(precio_litro)||!isFinite(km)) continue;
-    out.push({id: uuid(), fecha, vehiculo:'Mi coche', fuel:'Gasolina 95', euros, precio_litro, km, lleno:'sí'});
-  }
-  const merged = readLS(LS_ENTRIES, []).concat(out);
-  writeLS(LS_ENTRIES, merged);
-  const mergedQ = readLS(LS_QUEUE, []).concat(out);
-  writeLS(LS_QUEUE, mergedQ);
-  render(); 
-  syncQueue();
+// ---- Form ----
+function toDateStr(d){ return new Date(d).toISOString().slice(0,10) }
+async function addEntry(ev){
+  ev.preventDefault();
+  const fd=new FormData(document.getElementById('form'));
+  const entry={
+    id:uuid(),
+    fecha:fd.get('fecha'),
+    vehiculo:fd.get('vehiculo')||'Peugeot 206',
+    fuel:fd.get('fuel')||'Diésel',
+    euros:parseFloat(fd.get('euros')),
+    precio_litro:parseFloat(fd.get('precio_litro')),
+    km:parseFloat(fd.get('km')),
+    estacion:fd.get('estacion')||'',
+    pago:fd.get('pago')||'Tarjeta',
+    notas:(fd.get('notas')||'').toString().slice(0,500)
+  };
+  if(!entry.fecha||!isFinite(entry.euros)||!isFinite(entry.precio_litro)||!isFinite(entry.km)){ alert('Revisa los campos obligatorios.'); return; }
+  const entries=readLS(LS_ENTRIES,[]); entries.push(entry); writeLS(LS_ENTRIES,entries);
+  const queue=readLS(LS_QUEUE,[]); queue.push(entry); writeLS(LS_QUEUE,queue);
+  setStatus('Pendiente de envío','warn');
+  document.getElementById('form').reset(); document.getElementById('fecha').value=toDateStr(new Date());
+  renderSummary(); syncQueue();
 }
 
-// init
+// ---- init ----
 (async function(){
-  // IMPORTANT: relative path for GitHub Pages/Netlify scopes
-  if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw.js', {scope: './'}); }catch{} }
+  if('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('sw.js',{scope:'./'});}catch{} }
   document.getElementById('form').addEventListener('submit', addEntry);
   document.getElementById('btn-clear').addEventListener('click', ()=> document.getElementById('form').reset());
-  document.getElementById('btn-export').addEventListener('click', exportCSV);
-  document.getElementById('file-import').addEventListener('change', e=>{ const f=e.target.files[0]; if(f) importCSV(f); e.target.value=''; });
-  document.getElementById('btn-reset').addEventListener('click', ()=>{ if(confirm('¿Borrar datos locales?')) { localStorage.removeItem(LS_ENTRIES); localStorage.removeItem(LS_QUEUE); render(); setStatus('Vacío',''); }});
-  document.getElementById('btn-sync').addEventListener('click', syncQueue);
-  document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
-
-  const s = document.createElement('script'); 
-  s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
-  s.onload = ()=> render(); 
-  document.body.appendChild(s);
-
-  // Prefill por URL (?fecha=...&euros=...&autosend=1)
-  try{
-    const qs = new URLSearchParams(location.search);
-    const map = ['fecha','vehiculo','fuel','euros','precio_litro','km','lleno','estacion','pago','notas'];
-    let touched = false;
-    for(const k of map){ if(qs.has(k)){ const el = document.getElementById(k); if(el){ el.value = qs.get(k); touched = true; } } }
-    if(touched && (qs.get('autosend')==='1' || qs.get('autoguardar')==='1')){
-      setTimeout(()=> document.getElementById('form').requestSubmit(), 100);
-    }
-  }catch{}
-
+  document.getElementById('fecha').value = toDateStr(new Date());
   window.addEventListener('online', syncQueue);
   window.addEventListener('focus', ()=> setTimeout(syncQueue, 300));
-  render();
+  await renderSummary();
 })();
 </script>
 </body>
