@@ -173,7 +173,7 @@
 <script>
 // ===================== CONFIGURACIÓN =====================
 const GAS_ENDPOINT = "https://script.google.com/macros/s/AKfycbwnRGDahVQ_APm2qstM5-L4WXmJXnYQVPmSsjQAnjXuTmWZkEdhoGGpWcEjqCYix8mZFg/exec";
-const GAS_API_KEY = "";
+const GAS_API_KEY = ""; // pon aquí tu clave si activaste API_KEY en Code.gs
 // ===================== FIN CONFIG ========================
 
 const LS_ENTRIES = 'fuelEntries_v2';
@@ -296,18 +296,22 @@ function setStatus(text, kind){
 async function sendToGoogle(batch){
   if(!GAS_ENDPOINT){ throw new Error('Configura GAS_ENDPOINT en el código.'); }
   const payload = { apiKey: GAS_API_KEY, entries: batch };
-  const res = await fetch(GAS_ENDPOINT, {
-    method:'POST',
-    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-    body: JSON.stringify(payload),
-    mode: 'cors',
-    cache:'no-cache'
-  });
-  if(!res.ok){
-    throw new Error('HTTP '+res.status);
+  try{
+    const res = await fetch(GAS_ENDPOINT, {
+      method:'POST',
+      headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+      mode: 'cors',
+      cache:'no-cache'
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    try{ const j = await res.json(); if(!j.ok) throw new Error(j.error||'unknown'); }catch(_){}
+    return true;
+  }catch(err){
+    // Fallback "no-cors" por si el navegador bloquea lectura de respuesta
+    await fetch(GAS_ENDPOINT, { method:'POST', body: JSON.stringify(payload), mode:'no-cors' });
+    return true;
   }
-  try{ const j = await res.json(); if(!j.ok) throw new Error(j.error||'unknown'); }catch(_){ }
-  return true;
 }
 
 async function syncQueue(){
@@ -335,17 +339,19 @@ function exportCSV(){
   const entries = readLS(LS_ENTRIES, []);
   const {rows} = enrichRows(entries);
   const header = ['id','fecha','vehiculo','fuel','euros','precio_litro','km','lleno','estacion','pago','notas','lat','lon','km_recorridos','litros','consumo_100km','costo_km','co2_kg'];
-  const lines = [header.join(',')].concat(rows.map(r=>[r.id, r.fecha, r.vehiculo||'', r.fuel||'', fmt(r.euros,2), fmt(r.precio_litro,3), fmt(r.km,0), r.lleno||'', r.estacion||'', r.pago||'', (r.notas||'').replace(/,|/g,' '), r.loc?.lat||'', r.loc?.lon||'', r.km_rec!=null? fmt(r.km_rec,0):'', r.litros!=null? fmt(r.litros,2):'', r.l100!=null? fmt(r.l100,2):'', r.eur_km!=null? fmt(r.eur_km,3):'', fmt(r.co2,2)].join(',')));
-  const blob = new Blob([lines.join('')], {type:'text/csv;charset=utf-8'});
+  const lines = [header.join(',')].concat(rows.map(r=>[r.id, r.fecha, r.vehiculo||'', r.fuel||'', fmt(r.euros,2), fmt(r.precio_litro,3), fmt(r.km,0), r.lleno||'', r.estacion||'', r.pago||'', (r.notas||'').replace(/,|\n/g,' '), r.loc?.lat||'', r.loc?.lon||'', r.km_rec!=null? fmt(r.km_rec,0):'', r.litros!=null? fmt(r.litros,2):'', r.l100!=null? fmt(r.l100,2):'', r.eur_km!=null? fmt(r.eur_km,3):'', fmt(r.co2,2)].join(',')));
+  const blob = new Blob([lines.join('\n')], {type:'text/csv;charset=utf-8'});
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'fuel_tracker.csv'; a.click(); URL.revokeObjectURL(a.href);
 }
 
 async function importCSV(file){
-  const text = await file.text(); const lines = text.split(/?/).filter(Boolean);
+  const text = await file.text(); 
+  const lines = text.split(/\r?\n/).filter(Boolean);
   if(!lines.length) return; 
   const header = lines[0].split(',');
   const idx = {fecha: header.indexOf('fecha'), euros: header.indexOf('euros'), precio_litro: header.indexOf('precio_litro'), km: header.indexOf('km') };
-  const out=[]; for(let i=1;i<lines.length;i++){
+  const out=[]; 
+  for(let i=1;i<lines.length;i++){
     const parts = lines[i].split(',');
     const fecha = parts[idx.fecha]?.trim();
     const euros = parseFloat(parts[idx.euros]);
@@ -358,7 +364,8 @@ async function importCSV(file){
   writeLS(LS_ENTRIES, merged);
   const mergedQ = readLS(LS_QUEUE, []).concat(out);
   writeLS(LS_QUEUE, mergedQ);
-  render(); syncQueue();
+  render(); 
+  syncQueue();
 }
 
 // init
@@ -372,7 +379,23 @@ async function importCSV(file){
   document.getElementById('btn-reset').addEventListener('click', ()=>{ if(confirm('¿Borrar datos locales?')) { localStorage.removeItem(LS_ENTRIES); localStorage.removeItem(LS_QUEUE); render(); setStatus('Vacío',''); }});
   document.getElementById('btn-sync').addEventListener('click', syncQueue);
   document.getElementById('fecha').value = new Date().toISOString().slice(0,10);
-  const s = document.createElement('script'); s.src = 'https://cdn.jsdelivr.net/npm/chart.js'; s.onload = ()=> render(); document.body.appendChild(s);
+
+  const s = document.createElement('script'); 
+  s.src = 'https://cdn.jsdelivr.net/npm/chart.js';
+  s.onload = ()=> render(); 
+  document.body.appendChild(s);
+
+  // Prefill por URL (?fecha=...&euros=...&autosend=1)
+  try{
+    const qs = new URLSearchParams(location.search);
+    const map = ['fecha','vehiculo','fuel','euros','precio_litro','km','lleno','estacion','pago','notas'];
+    let touched = false;
+    for(const k of map){ if(qs.has(k)){ const el = document.getElementById(k); if(el){ el.value = qs.get(k); touched = true; } } }
+    if(touched && (qs.get('autosend')==='1' || qs.get('autoguardar')==='1')){
+      setTimeout(()=> document.getElementById('form').requestSubmit(), 100);
+    }
+  }catch{}
+
   window.addEventListener('online', syncQueue);
   window.addEventListener('focus', ()=> setTimeout(syncQueue, 300));
   render();
